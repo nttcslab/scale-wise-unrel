@@ -40,10 +40,10 @@ All data used in our experiments are in `data.tar.gz`. After extracting, `*.txt`
 The proposed method can be executed by the following command:
 
 ```shell
-./main [graph_file] [probability_file] [server_file] [order_file]
+./main [graph_file] [probability_file] [server_file] [order_file] <client_file>
 ```
 
-`[graph_file]`, `[probability_file]`, and `[server_file]` specify the path to the file describing the edgelist of the graph, each link's availability, and the list of server nodes, respectively. `[order_file]` specifies the path to the file describing the ordering among links. Note that we already computed the link order by the path-decomposition heuristics and wrote it on `*.txt`, so `[order_file]` can be specified with the same path as `[graph_file]` when reproducing the experimental results.
+`[graph_file]`, `[probability_file]`, and `[server_file]` specify the path to the file describing the edgelist of the graph, each link's availability, and the list of server nodes, respectively. `[order_file]` specifies the path to the file describing the ordering among links. Note that we already computed the link order by the path-decomposition heuristics and wrote it on `*.txt`, so `[order_file]` can be specified with the same path as `[graph_file]` when reproducing the experimental results. `<client_file>` is an optional argument that specify the path to the file describing the list of client nodes. If `<client_file>` is not specified, clients are set to all the nodes.
 
 After execution, the program computes the probability that exactly $n^\prime$ nodes are disconnected from any server node for every $n^\prime$. Note that this is equivalent to compute $U(n^\prime)$ values in our paper when the client nodes are all the nodes other than servers.
 
