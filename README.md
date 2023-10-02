@@ -50,7 +50,7 @@ After execution, the program computes the probability that exactly $n^\prime$ no
 _Running example:_ To compute the scale-wise unreliability of UsCarrier topology when $|T|=5$, run:
 
 ```shell
-./main ../data/0186-real-UsCarrier.edgelist.txt ../data/0186-real-UsCarrier.edgelist.txt.prob ../data/src/0186-real-UsCarrier.edgelist.txt.bc5.src ../data/src/0186-real-UsCarrier.edgelist.txt
+./main ../data/0186-real-UsCarrier.edgelist.txt ../data/0189-real-UsCarrier.edgelist.txt.prob ../data/src/0189-real-UsCarrier.edgelist.txt.bc5.src ../data/src/0189-real-UsCarrier.edgelist.txt
 ```
 
 The baseline method can also be executed in the same way as follows:
