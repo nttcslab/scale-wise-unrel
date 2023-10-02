@@ -13,7 +13,7 @@
 #include <unordered_set>
 
 void print_usage(char *fil){
-  fprintf(stderr, "Usage: %s [graph_file] [probability_file] [source_file] [order_file]\n", fil);
+  fprintf(stderr, "Usage: %s [graph_file] [probability_file] [server_file] [order_file] <client_file>\n", fil);
 }
 
 class State{
@@ -60,6 +60,7 @@ int main(int argc, char **argv){
   Graph G;
   int n, m;
   std::unordered_set<int> srcs;
+  std::unordered_set<int> clts;
   std::vector<double> pi;
   
   {
@@ -115,6 +116,22 @@ int main(int argc, char **argv){
     }
   }
   
+  if(argc >= 6){
+    FILE *fp;
+    if((fp = fopen(argv[5], "r")) == NULL){
+      fprintf(stderr, "ERROR: reading client vertices file %s failed.\n", argv[5]);
+      print_usage(argv[0]);
+      exit(EXIT_FAILURE);
+    }
+    int clt;
+    while(fscanf(fp, "%d", &clt) != EOF){
+      clts.emplace(clt);
+    }
+    fclose(fp);
+  }else{
+    for(int clt=1; clt<=n; ++clt) clts.emplace(clt);
+  }
+  
   auto cstart = std::chrono::system_clock::now();
   
   G.buildFrontiers();
@@ -156,14 +173,14 @@ int main(int argc, char **argv){
     maps[i+1].reserve(ssizes[i] * 2);
     ssizes[i+1] = 0;
     
-    // build ast_ent and ast_lve
-    std::vector<size_t> ast_ent, not_ent, ast_lve, not_lve;
+    // build ast_ent and clt_lve
+    std::vector<size_t> ast_ent, not_ent, clt_lve, not_lve;
     for(const auto& pos : now_ent){
       if(srcs.count(med_fro[pos])) ast_ent.emplace_back(pos);
       else                         not_ent.emplace_back(pos);
     }
     for(const auto& pos : now_lve){
-      if(srcs.count(med_fro[pos])) ast_lve.emplace_back(pos);
+      if(clts.count(med_fro[pos])) clt_lve.emplace_back(pos);
       else                         not_lve.emplace_back(pos);
     }
     
@@ -201,9 +218,12 @@ int main(int argc, char **argv){
         tmp_numv.fill(0);
         memcpy(tmp_numv.data(), med_numv.data(), cc);
         memcpy(lo_comp.data(), med_comp.data(), ll);
-        for(const auto& pos : now_lve){
+        for(const auto& pos : clt_lve){
           if(pos < ll) lo_comp[pos] = -1;
           ++tmp_numv[med_comp[pos]];
+        }
+        for(const auto& pos : not_lve){
+          if(pos < ll) lo_comp[pos] = -1;
         }
         std::array<int8_t, 16> renum;
         renum.fill(-1);
@@ -253,9 +273,12 @@ int main(int argc, char **argv){
         tmp_numv.fill(0);
         memcpy(tmp_numv.data(), med_numv.data(), cc);
         memcpy(hi_comp.data(), med_comp.data(), ll);
-        for(const auto& pos : now_lve){
+        for(const auto& pos : clt_lve){
           if(pos < ll) hi_comp[pos] = -1;
           ++tmp_numv[med_comp[pos]];
+        }
+        for(const auto& pos : not_lve){
+          if(pos < ll) hi_comp[pos] = -1;
         }
         std::array<int8_t, 16> renum;
         renum.fill(-1);
@@ -311,7 +334,7 @@ int main(int argc, char **argv){
     }
   }
 
-  for(size_t ind=0; ind<=n; ++ind){
+  for(size_t ind=0; ind<=clts.size(); ++ind){
     printf("%zu: %.15lf\n", ind, res[ind]);
   }
   
